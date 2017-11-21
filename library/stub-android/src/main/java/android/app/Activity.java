@@ -23,4 +23,8 @@ public class Activity extends Context {
     public void finish() {
         throw new RuntimeException("Stub!");
     }
+
+    public void startActivityForResult(Intent intent, int requestCode, Bundle options){
+        throw new RuntimeException("Stub!");
+    }
 }

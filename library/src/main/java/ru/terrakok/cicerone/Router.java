@@ -5,6 +5,7 @@ import java.util.HashMap;
 import ru.terrakok.cicerone.commands.Back;
 import ru.terrakok.cicerone.commands.BackTo;
 import ru.terrakok.cicerone.commands.Forward;
+import ru.terrakok.cicerone.commands.ForwardActivityForResult;
 import ru.terrakok.cicerone.commands.Replace;
 import ru.terrakok.cicerone.commands.SystemMessage;
 import ru.terrakok.cicerone.result.ResultListener;
@@ -82,6 +83,14 @@ public class Router extends BaseRouter {
      */
     public void navigateTo(String screenKey, Object data) {
         executeCommand(new Forward(screenKey, data));
+    }
+
+    public void navigateToActivityForResult(String screenKey, int requestCode){
+        navigateToActivityForResult(screenKey,requestCode,null);
+    }
+
+    public void navigateToActivityForResult(String screenKey, int requestCode, Object data){
+        executeCommand(new ForwardActivityForResult(screenKey,requestCode,data));
     }
 
     /**

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import ru.terrakok.cicerone.commands.BackTo;
 import ru.terrakok.cicerone.commands.Command;
 import ru.terrakok.cicerone.commands.Forward;
+import ru.terrakok.cicerone.commands.ForwardActivityForResult;
 import ru.terrakok.cicerone.commands.Replace;
 
 /**
@@ -71,6 +72,15 @@ public abstract class SupportAppNavigator extends SupportFragmentNavigator {
                 activity.finish();
                 return;
             }
+        } else if (command instanceof ForwardActivityForResult){
+            ForwardActivityForResult forwardActivityForResult = (ForwardActivityForResult) command;
+            Intent activityIntent = createActivityIntent(forwardActivityForResult.getScreenKey(),forwardActivityForResult.getTransitionData());
+
+            if (activityIntent !=null){
+                Bundle options = createStartActivityOptions(command,activityIntent);
+                checkAndStartActivityForResult(forwardActivityForResult.getScreenKey(),activityIntent,forwardActivityForResult.getRequestCode(),options);
+                return;
+            }
         }
 
         // Use default fragments navigation
@@ -83,6 +93,14 @@ public abstract class SupportAppNavigator extends SupportFragmentNavigator {
             activity.startActivity(activityIntent, options);
         } else {
             unexistingActivity(screenKey, activityIntent);
+        }
+    }
+
+    private void checkAndStartActivityForResult(String screenKey, Intent activityIntent, int requestCode, Bundle options){
+        if (activityIntent.resolveActivity(activity.getPackageManager()) !=null){
+            activity.startActivityForResult(activityIntent,requestCode,options);
+        }else {
+            unexistingActivity(screenKey,activityIntent);
         }
     }
 

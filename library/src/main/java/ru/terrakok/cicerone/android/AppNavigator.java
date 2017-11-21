@@ -9,6 +9,7 @@ import android.widget.Toast;
 import ru.terrakok.cicerone.commands.BackTo;
 import ru.terrakok.cicerone.commands.Command;
 import ru.terrakok.cicerone.commands.Forward;
+import ru.terrakok.cicerone.commands.ForwardActivityForResult;
 import ru.terrakok.cicerone.commands.Replace;
 
 /**
@@ -70,6 +71,15 @@ public abstract class AppNavigator extends FragmentNavigator {
                 activity.finish();
                 return;
             }
+        } else if (command instanceof ForwardActivityForResult) {
+            ForwardActivityForResult forwardActivityForResult = (ForwardActivityForResult) command;
+            Intent activityIntent = createActivityIntent(forwardActivityForResult.getScreenKey(), forwardActivityForResult.getTransitionData());
+
+            if (activityIntent != null) {
+                Bundle options = createStartActivityOptions(command, activityIntent);
+                checkAndStartActivityForResult(forwardActivityForResult.getScreenKey(), activityIntent, forwardActivityForResult.getRequestCode(), options);
+                return;
+            }
         }
 
         // Use default fragments navigation
@@ -85,10 +95,18 @@ public abstract class AppNavigator extends FragmentNavigator {
         }
     }
 
+    private void checkAndStartActivityForResult(String screenKey, Intent activityIntent, int requestCode, Bundle options) {
+        if (activityIntent.resolveActivity(activity.getPackageManager()) != null) {
+            activity.startActivityForResult(activityIntent, requestCode, options);
+        } else {
+            unexistingActivity(screenKey, activityIntent);
+        }
+    }
+
     /**
      * Called when there is no activity to open {@code screenKey}.
      *
-     * @param screenKey screen key
+     * @param screenKey      screen key
      * @param activityIntent intent passed to start Activity for the {@code screenKey}
      */
     protected void unexistingActivity(String screenKey, Intent activityIntent) {
